@@ -10,9 +10,12 @@ use actix_web::{
 };
 use handlebars::{DirectorySourceOptions, Handlebars};
 use serde_json::json;
+use tracing_actix_web::TracingLogger;
+use tracing_subscriber::FmtSubscriber;
 
 #[get("/")]
 async fn index(hb: web::Data<Handlebars<'_>>) -> impl Responder {
+    tracing::info!("You requested the homepage!");
     let data = json!({
         "name": "Handlebars"
     });
@@ -35,7 +38,11 @@ async fn user(hb: web::Data<Handlebars<'_>>, path: web::Path<(String, String)>) 
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
-    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+    let subscriber = FmtSubscriber::new();
+
+    tracing::subscriber::set_global_default(subscriber)
+        .map_err(|_err| eprintln!("Unable to set global default subscriber"))
+        .unwrap();
 
     // Handlebars uses a repository for the compiled templates. This object must be
     // shared between the application threads, and is therefore passed to the
@@ -53,6 +60,7 @@ async fn main() -> io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .wrap(error_handlers())
+            .wrap(TracingLogger::default())
             .app_data(handlebars_ref.clone())
             .service(index)
             .service(user)
