@@ -1,0 +1,15 @@
+{
+    "name": "tailwindcss-compiler",
+    "version": "1.0.0",
+    "description": "This package contains tools that are required to process the projects artifacts.",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "npx tailwindcss -i ./src/main.css -o ../static/styles/main.css"
+    },
+    "author": "",
+    "license": "UNLICENSED",
+    "devDependencies": {
+        "tailwindcss": "^3.4.17"
+    }
+}

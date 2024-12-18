@@ -1,5 +1,6 @@
 use std::io;
 
+use actix_files as fs;
 use actix_web::{
     body::BoxBody,
     dev::ServiceResponse,
@@ -64,6 +65,7 @@ async fn main() -> io::Result<()> {
             .app_data(handlebars_ref.clone())
             .service(index)
             .service(user)
+            .service(fs::Files::new("/static", "./static"))
     })
     .workers(2)
     .bind(("127.0.0.1", 8080))?
